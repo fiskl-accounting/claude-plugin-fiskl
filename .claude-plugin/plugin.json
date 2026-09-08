@@ -1,6 +1,7 @@
 {
   "name": "fiskl",
   "version": "0.2.1",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "description": "Ask your books why, then put them right. Connects Claude to your Fiskl accounting data and adds the domain expertise to investigate it — trace a wrong figure back to the transaction behind it, find bookkeeping mistakes nobody reported — and to record what is missing: expenses, income, transfers, supplier bills, receivables and fixed assets, always previewed and confirmed before anything is written.",
   "author": {
     "name": "Fiskl",
