@@ -1,0 +1,13 @@
+{
+  "name": "fiskl",
+  "owner": {
+    "name": "Fiskl",
+    "email": "support@fiskl.com"
+  },
+  "plugins": [
+    {
+      "name": "fiskl",
+      "source": "."
+    }
+  ]
+}
