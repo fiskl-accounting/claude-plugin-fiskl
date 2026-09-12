@@ -9,7 +9,16 @@
       "name": "fiskl",
       "source": {
         "source": "github",
-        "repo": "fiskl-accounting/claude-plugin-fiskl"
+        "repo": "fiskl-accounting/claude-plugin-fiskl",
+        "path": "fiskl"
+      }
+    },
+    {
+      "name": "fiskl-staging",
+      "source": {
+        "source": "github",
+        "repo": "fiskl-accounting/claude-plugin-fiskl",
+        "path": "fiskl-staging"
       }
     }
   ]

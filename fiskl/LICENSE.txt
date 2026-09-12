@@ -1,0 +1,15 @@
+Copyright (c) 2026 Fiskl. All rights reserved.
+
+This plugin is provided by Fiskl for use with Claude to connect to Fiskl
+accounting services. You may install and use this plugin solely in
+connection with an active Fiskl account and subscription.
+
+Redistribution, modification, or use of this software or its contents
+outside of its intended use with Claude and Fiskl services is not
+permitted without prior written consent from Fiskl.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL FISKL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE USE OF THIS SOFTWARE.
