@@ -1,7 +1,7 @@
 ---
 name: fiskl-diagnose-the-books
 description: Investigate why a figure in Fiskl looks wrong, and find bookkeeping mistakes nobody has reported yet. Use when the user says a number looks off, wrong, or surprising — "my ratios are terrible but I'm profitable", "why is my current ratio so low", "my gross margin dropped and I don't know why", "this account balance looks wrong", "my Fiskl balance doesn't match my bank", "my P&L looks off", "profit doesn't match my cash", "the trial balance is out", "my VAT return looks short" — or when they ask for a check-up: "check my books", "find mistakes", "spot anomalies", "did I miss any tax", "is anything miscategorised", "review last quarter before I file". Also use when a report figure needs tracing back to the transactions behind it. Read-only: this skill investigates and explains, it never changes data.
-version: 0.3.0
+version: 0.1.0
 ---
 
 # Diagnose the books
@@ -71,17 +71,6 @@ expectation.
 
 Nothing looks wrong. You are looking for inconsistency, which means comparing a group of
 similar transactions and finding the member that differs.
-
-**Start with `books_check(start, end)`.** It runs every check below server-side over every
-transaction in the period — uncategorised, missing_tax, inconsistent_tax_rate,
-tax_with_zero_amount, category_outlier, duplicate_suspect, missing_vendor, missing_client,
-future_dated, unmatched_transfers, round_amounts — and returns findings that name the
-transaction (`txId`), each with `confidence` CONFIRMED or SUSPECTED, plus the list of checks
-that came back `clean`. Report CONFIRMED as fact and SUSPECTED as "possible — worth
-confirming". Only fall back to the manual comparison below when `books_check` is not
-available to you or the user asks about a pattern it does not cover. To explain one finding,
-call `transaction_details` with its `txId`; for an unmatched transfer, the other leg is on
-another money account in the same period.
 
 **The highest-value check: tax applied inconsistently.**
 
