@@ -1,7 +1,7 @@
 ---
 name: fiskl-record-transactions
-description: Record what is missing from the books in Fiskl, and fix what diagnose-the-books found, through preview-then-confirm writes. Use when the user wants an entry recorded — "record this expense", "this card payment isn't in Fiskl", "add the bill from Staples", "log the money that came in from Acme", "move money between accounts", "I paid the supplier from the wrong account, fix it", "record the laptop I bought", "register this asset and depreciate it over three years", "the depreciation is posting but the asset was never registered" — or after a check-up, "fix what you found", "correct that category", "record the missing transfer". Also use when someone asks what Fiskl needs to record a purchase, bill or asset. Writes only after the user has seen a preview and said yes; never posts a manual journal, never deletes, never guesses an account or a tax rate.
-version: 0.1.0
+description: Record what is missing from the books in Fiskl, and fix what diagnose-the-books found, through preview-then-confirm writes. Use when the user wants an entry recorded — "record this expense", "this card payment isn't in Fiskl", "add the bill from Staples", "log the money that came in from Acme", "move money between accounts", "I paid the supplier from the wrong account, fix it", "record the laptop I bought", "register this asset and depreciate it over three years", "the depreciation is posting but the asset was never registered" — or when they have the receipt or supplier bill itself as a file, "scan this receipt", "here's a photo of the receipt", "I have the bill as a PDF", "send this to AI Expenses" — or after a check-up, "fix what you found", "correct that category", "record the missing transfer". Also use when someone asks what Fiskl needs to record a purchase, bill or asset. Writes only after the user has seen a preview and said yes; never posts a manual journal, never deletes, never guesses an account or a tax rate.
+version: 0.4.0
 ---
 
 # Record transactions
@@ -17,9 +17,10 @@ refused here too — the difference is that the error names the field.
 
 ## Always do this first
 
-1. **`me_permissions`** — you need `transaction.write` (scope `transactions:write`).
-   Without it, say so and stop; a missing scope means reconnecting with more
-   permissions, not a missing feature.
+1. **`me_permissions`** — you need `transaction.write` (scope `transactions:write`), or
+   `bill.write` (scope `bills:write`) to scan a receipt or bill from a file. Without it,
+   say so and stop; a missing scope means reconnecting with more permissions, not a
+   missing feature.
 2. **`company_info`** — the base currency and the accounting basis.
 3. **`date_periods`** — the `Today` period gives you the current date; the response also
    tells you the accounting lock date. **Never compute a date yourself** unless the user
@@ -48,6 +49,38 @@ first — with the user's agreement, and with the name they give you — then re
 For the reasoning behind these rules (why there is no transaction type, why amounts are
 unsigned, why tax is a rate and never an amount, what a mirror row is), read
 [references/ledger-model.md](references/ledger-model.md) when a user asks *why*.
+
+## A receipt or supplier bill as a file
+
+When the user has the document itself — a photo, a scan, a PDF — scanning it is the first
+choice, not the manual procedure below. Fiskl reads the vendor, date, lines, totals and tax
+from the file, exactly as its AI Expenses screen does, so the user does not have to dictate
+them and you do not have to resolve them. It needs `bills:write`, a plan with accounting,
+and each page counts against the plan's receipt-scanning allowance.
+
+1. **`create_expense_upload(fileName, contentType, sizeBytes)`** registers the upload and
+   returns two ways to send the file, both into the same upload. Use exactly one:
+   - **`uploadUrl`** with the ready `curl` command, where you can run commands and reach
+     S3 (Claude Code). `sizeBytes` must then be the file's exact size, or S3 refuses it.
+   - **`browserUploadUrl`** everywhere else — a plain chat, a phone, a sandbox that cannot
+     reach S3. Pass `sizeBytes` 0 and give the user the link to open: it needs no login,
+     works once, and expires after 30 minutes. Do not fetch or open the link yourself.
+2. **`get_expense_upload(id)`** until `status` is `PROCESSED`, `DUPLICATE` or `FAILED`.
+   `UPLOADED` means the file has not arrived or has not been read yet; `INGESTING` means it
+   is being read. Scanning usually takes under a minute — wait and poll, and record nothing
+   for this purchase meanwhile.
+3. **Tell the user what the scan produced.** Depending on the company's settings it is a
+   supplier bill draft waiting for their review in Fiskl (`needsReview`), or an Accounts
+   Payable transaction already posted (`apTransactionId`, which `get_transaction` shows).
+   `DUPLICATE` means Fiskl already had this document and created nothing. `FAILED` means
+   it could not be read or posted (a date in a locked period sets `failDate`); fall back to
+   the manual procedure with what the user can tell you, or create a new upload to retry.
+
+**The scan is the record.** Never also `create_transaction` for the same purchase, and never
+hand-record a purchase whose upload is still `UPLOADED` or `INGESTING` — that duplicate is
+the one step 6 above cannot catch, because the entry is not in the books yet. To record a
+bill from figures the user already has and no file, use the manual procedure with type
+`BILL`.
 
 ## Which type is it
 
@@ -223,6 +256,7 @@ and *then* asked whether to link it in the app.
 - Guess an account, a tax rate, a client or a vendor. Ask, and show the candidates.
 - Post a net amount with a rate attached, or invent a tax amount or a tax account.
 - Create without a preview the user has seen, or retry a create without an `externalId`.
+- Hand-record a purchase the user also sent as a file, or one whose scan is still running.
 - Touch a matched, linked, bill-owned or locked entry, or record an offset to get around it.
 - Backdate into a locked period, or move a date to make an entry fit.
 - Record an entry on the receiving account of a transfer as if it were income.
