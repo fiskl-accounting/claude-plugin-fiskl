@@ -14,5 +14,6 @@
     "financial-reports",
     "fiskl"
   ],
-  "homepage": "https://help.fiskl.com/integrations/public-api/connect-ai-assistant"
+  "homepage": "https://help.fiskl.com/integrations/public-api/connect-ai-assistant",
+  "privacyPolicyUrl": "https://fiskl.com/privacy-policy"
 }

@@ -60,8 +60,9 @@ and each page counts against the plan's receipt-scanning allowance.
 
 1. **`create_expense_upload(fileName, contentType, sizeBytes)`** registers the upload and
    returns two ways to send the file, both into the same upload. Use exactly one:
-   - **`uploadUrl`** with the ready `curl` command, where you can run commands and reach
-     S3 (Claude Code). `sizeBytes` must then be the file's exact size, or S3 refuses it.
+   - **`uploadUrl`** where you can run a command yourself (Claude Code): send the file the
+     way the tool result describes. `sizeBytes` must then be the file's exact size, or the
+     upload is refused.
    - **`browserUploadUrl`** everywhere else — a plain chat, a phone, a sandbox that cannot
      reach S3. Pass `sizeBytes` 0 and give the user the link to open: it needs no login,
      works once, and expires after 30 minutes. Do not fetch or open the link yourself.
